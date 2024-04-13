@@ -53,24 +53,41 @@ public class FolderVisualizer extends Application {
         browseButton.setOnAction(e -> browse());
 
         HBox pathBox = new HBox(pathField, browseButton);
-        VBox fileInfoBox = new VBox(fileNameLabel, fileExtensionLabel, fileSizeLabel, fileCreationDateLabel);
-        fileInfoBox.setAlignment(Pos.CENTER_RIGHT);
-        fileInfoBox.setPadding(new Insets(10));
+        VBox fileInfoBox = new VBox(10);
 
-        treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                File file = newValue.getValue();
-                fileNameLabel.setText(file.getName());
-                fileExtensionLabel.setText(getFileExtension(file));
-                fileSizeLabel.setText(getFileSize(file));
-                fileCreationDateLabel.setText(getFileCreationDate(file));
-            } else {
-                fileNameLabel.setText("");
-                fileExtensionLabel.setText("");
-                fileSizeLabel.setText("");
-                fileCreationDateLabel.setText("");
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+
+        Label fileLabel = new Label("File name : ");
+        gridPane.add(fileLabel, 0, 0);
+        gridPane.add(fileNameLabel, 1, 0);
+
+        Label extensionLabel = new Label("File extension : ");
+        gridPane.add(extensionLabel, 0, 1);
+        gridPane.add(fileExtensionLabel, 1, 1);
+
+        Label sizeLabel = new Label("File size : ");
+        gridPane.add(sizeLabel, 0, 2);
+        gridPane.add(fileSizeLabel, 1, 2);
+
+        Label dateLabel = new Label("File creation date : ");
+        gridPane.add(dateLabel, 0, 3);
+        gridPane.add(fileCreationDateLabel, 1, 3);
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(e -> {
+            if (treeView.getSelectionModel().getSelectedItem() != null) {
+                File file = treeView.getSelectionModel().getSelectedItem().getValue();
+                if (file.delete()) {
+                    System.out.println("File deleted successfully");
+                } else {
+                    System.out.println("Failed to delete file");
+                }
             }
         });
+
+        fileInfoBox.getChildren().addAll(gridPane, deleteButton);
 
         VBox root = new VBox(pathBox, treeView, fileInfoBox);
 
